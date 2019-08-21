@@ -97,10 +97,10 @@ bool ObstacleExtractor::updateParams(std_srvs::Empty::Request &req, std_srvs::Em
   nh_local_.param<double>("max_circle_radius", p_max_circle_radius_, 0.6);
   nh_local_.param<double>("radius_enlargement", p_radius_enlargement_, 0.25);
 
-  nh_local_.param<double>("min_x_limit", p_min_x_limit_, -10.0);
-  nh_local_.param<double>("max_x_limit", p_max_x_limit_,  10.0);
-  nh_local_.param<double>("min_y_limit", p_min_y_limit_, -10.0);
-  nh_local_.param<double>("max_y_limit", p_max_y_limit_,  10.0);
+  nh_local_.param<double>("min_x_limit", p_min_x_limit_, -50.0);
+  nh_local_.param<double>("max_x_limit", p_max_x_limit_,  50.0);
+  nh_local_.param<double>("min_y_limit", p_min_y_limit_, -50.0);
+  nh_local_.param<double>("max_y_limit", p_max_y_limit_,  50.0);
 
   nh_local_.param<string>("frame_id", p_frame_id_, "map");
 
@@ -136,7 +136,8 @@ void ObstacleExtractor::scanCallback(const sensor_msgs::LaserScan::ConstPtr scan
   double phi = scan_msg->angle_min;
 
   for (const float r : scan_msg->ranges) {
-    if (r >= scan_msg->range_min && r <= scan_msg->range_max)
+    if (r >= scan_msg->range_min && r <= scan_msg->range_max && !isnan(r) && !isinf(r)
+    && r < 11 && r > 0.5)
       input_points_.push_back(Point::fromPoolarCoords(r, phi));
 
     phi += scan_msg->angle_increment;
